@@ -251,6 +251,7 @@
         let invoiceItems = [];
         let currentEditIndex = null;
         let tempQty = "1";
+        let isFirstType = true; // متغير جديد لضمان مسح الرقم 1 عند البدء بكتابة رقم جديد
 
         document.getElementById('inv-date').value = new Date().toLocaleDateString('ar-EG');
 
@@ -324,6 +325,7 @@
         function openQtyKeypad(n, p, i = null) {
             currentEditIndex = i;
             tempQty = (i !== null) ? invoiceItems[i].qty.toString() : "1";
+            isFirstType = true; // تفعيل وضع الكتابة الجديدة
             document.getElementById("modal-content").innerHTML = `
                 <div style="text-align:center; font-weight:bold; margin-bottom:8px; font-size:14px;">${n}</div>
                 <div id="qty-disp" style="font-size:28px; font-weight:900; text-align:center; padding:8px; background:#f1f5f9; border-radius:8px;">${tempQty}</div>
@@ -344,13 +346,18 @@
                 if(tempQty === "") tempQty = "0"; 
             }
             else if(k === '.') { 
-                if(!tempQty.toString().includes('.')) tempQty += "."; 
+                if(!tempQty.toString().includes('.')) tempQty += ".";
+                isFirstType = false;
             }
             else {
-                if (tempQty === "0" || (tempQty === "1" && currentEditIndex === null)) {
+                // إذا كانت أول ضغطة وكان الرقم الافتراضي 1، نقوم باستبداله
+                if (isFirstType) {
                     tempQty = k;
+                    isFirstType = false;
                 } else {
-                    tempQty = tempQty.toString() + k;
+                    // إذا لم تكن أول ضغطة، نضيف الرقم بجانب الرقم السابق (مثل 1 ثم 0 لتصبح 10)
+                    if (tempQty === "0") tempQty = k;
+                    else tempQty = tempQty.toString() + k;
                 }
             }
             document.getElementById("qty-disp").textContent = tempQty;
