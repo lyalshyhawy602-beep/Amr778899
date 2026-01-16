@@ -338,13 +338,28 @@
             document.getElementById("modal-keypad").style.display = "flex";
         }
 
-        function pk(k) {
-            if(k==='b') { tempQty=tempQty.slice(0,-1); if(tempQty==="") tempQty="0"; }
-            else if(k==='.') { if(!tempQty.includes('.')) tempQty+="."; }
-            else tempQty = (tempQty==="0" || (tempQty==="1" && currentEditIndex===null)) ? k : tempQty+k;
-            document.getElementById("qty-disp").textContent = tempQty;
+    function pk(k) {
+    // إذا كان الزر هو حذف (Backspace)
+    if(k === 'b') { 
+        tempQty = tempQty.toString().slice(0, -1); 
+        if(tempQty === "") tempQty = "0"; 
+    }
+    // إذا كان الزر هو الفاصلة العشرية
+    else if(k === '.') { 
+        if(!tempQty.toString().includes('.')) tempQty += "."; 
+    }
+    // لإدخال الأرقام (بما في ذلك 1 ثم 0 لتكوين 10)
+    else {
+        // إذا كانت القيمة الحالية "0" أو القيمة الافتراضية "1" عند البدء، استبدلها بالرقم الجديد
+        if (tempQty === "0" || (tempQty === "1" && currentEditIndex === null && tempQty.length === 1)) {
+            tempQty = k;
+        } else {
+            tempQty = tempQty.toString() + k;
         }
-
+    }
+    document.getElementById("qty-disp").textContent = tempQty;
+}
+   
         function cnfQty(name, price) {
             let q = parseFloat(tempQty) || 1;
             if (currentEditIndex !== null) invoiceItems[currentEditIndex].qty = q;
